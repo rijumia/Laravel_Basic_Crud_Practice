@@ -8,6 +8,7 @@ use Illuminate\Contracts\View\View;
 use App\Models\Product;
 use Illuminate\Support\Str;
 use Illuminate\Auth\Events\Validated;
+use App\Models\Category;
 
 class ProductController extends Controller
 {
@@ -17,25 +18,36 @@ class ProductController extends Controller
         return view('product.index', compact('products'));
     }
 
-    // public function create(): View
-    // {
-    //     return view('category.create');
-    // }
+    public function create(): View
+    {
+        $categories = Category::latest()->get();
+        return view('product.create', compact('categories'));
+    }
     
-    // public function store(Request $request): RedirectResponse
-    // {
-    //     $request->validate([
-    //         'name' => 'required|unique:categories,name|string|max:100|min:6',
-    //         'status' => 'nullable|boolean',
-    //     ]);
+    public function store(Request $request): RedirectResponse
+    {
+        // $request->validate([
+        //     'name' => 'required|unique:categories,name|string|max:100|min:6',
+        //     'status' => 'nullable|boolean',
+        // ]);
 
-    //     $category = new Category();
-    //     $category->name = $request->name;
-    //     $category->slug = Str::slug($request->name);
-    //     $category->status = $request->status;
-    //     $category->save();
-    //     return redirect()->route('category.index')->withInput();
-    // }
+        $product = new Product();
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $filename = Str::slug($request->name) . '-' . time() . '.' . $file->getClientOriginalExtension();
+            $path = $file->storeAs('public/product', $filename);
+            $product->image = $path;
+        }
+        
+        $product->name = $request->name;
+        $product->category_id = $request->category_id;
+        $product->slug = Str::slug($request->name);
+        $product->status = $request->status;
+        $product->description = $request->description;
+        $product->price = $request->price;
+        $product->save();
+        return redirect()->route('product.index')->withInput();
+    }
     // public function edit($id): View
     // {
     //     $category = Category::findOrFail($id);
