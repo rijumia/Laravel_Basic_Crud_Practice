@@ -3,12 +3,12 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
+    use SoftDeletes;
+    
     public function up(): void
     {
         Schema::create('products', function (Blueprint $table) {
@@ -21,7 +21,10 @@ return new class extends Migration
             $table->string('image')->nullable();
             $table->boolean('status')->default(1)->comment('0=Inactive, 1=Active');
             $table->timestamps();
+            $table->softDeletes();
+
             $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade')->onUpdate('cascade');
+
         });
     }
 

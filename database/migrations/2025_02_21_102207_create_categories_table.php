@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 return new class extends Migration
 {
+    use SoftDeletes;
     /**
      * Run the migrations.
      */
@@ -19,6 +20,7 @@ return new class extends Migration
             $table->boolean('status')->default(1)->comment('0=Inactive, 1=Active');
             $table->longtext('description')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
